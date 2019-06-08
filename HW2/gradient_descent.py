@@ -58,7 +58,7 @@ for j in range(0, cols, 1):
 
 
 # dellf descent iteration
-eta = 0.0001
+eta = 0.001
 stop = 0.001
 error = 0
 
@@ -93,12 +93,13 @@ while True:
     if abs(prev_iter_error - error) <= stop:
         break
 
+print(f'Final w: {w}')
 
-# distance from origin calculation
+# distance from origin calculation (pythagorean theorem)
 normw = 0
 for j in range(0, cols-1, 1):
     normw += w[j]**2
-    print(f'w: {abs(w[j])}')
+    print(f'normw: {abs(w[j])}')
 
 normw = math.sqrt(normw)
 origin_distance = abs(w[len(w)-1]/normw)
