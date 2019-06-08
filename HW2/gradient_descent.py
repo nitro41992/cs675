@@ -55,21 +55,23 @@ def dot_product(refw, refx):
 w = []
 for j in range(0, cols, 1):
     w.append(float(0.02*random.uniform(0, 1) - 0.01))
-# print(f'w: {w}')
+
+
 # dellf descent iteration
-eta = 0.001
+eta = 0.0001
 stop_condition = 0.001
 error = 0
 
 # compute dellf and error
-for k in range(0, 10):
+for k in range(0, 100000):
     dellf = []
+    dellf.extend(0 for _ in range(cols))
     prev_iter_error = error
     for i in range(0, rows, 1):
         if (labels.get(i) != None):
             dp = dot_product(w, data[i])
             for j in range(0, cols, 1):
-                dellf.append(float((labels[i]-dp)*data[i][j]))
+                dellf[j] += float((labels[i]-dp)*data[i][j])
 
     # print(f'dellf: {dellf}')
 
@@ -83,11 +85,13 @@ for k in range(0, 10):
     for i in range(0, rows, 1):
         if (labels.get(i) != None):
             error += (labels[i] - dot_product(w, data[i]))**2
-            # print("error: ", error)
-    # print("prevError", prev_iter_error)
 
-    # if abs(prev_iter_error - error) <= stop_condition:
-    #     break
+    # print("error: ", error)
+    # print("prevError", prev_iter_error)
+    # print("error diff", abs(prev_iter_error - error))
+
+    if abs(prev_iter_error - error) <= stop_condition:
+        break
 
 
 # distance from origin calculation
