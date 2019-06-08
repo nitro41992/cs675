@@ -3,7 +3,7 @@ import math
 import random
 
 
-#Read File
+# Read File
 datafile = sys.argv[1]
 f = open(datafile)
 data = []
@@ -19,11 +19,14 @@ while (l != ''):
 rows = len(data)
 cols = len(data[0])
 f.close()
+# print(f'Data: {data}')
+# print(f'rows: {rows}')
+# print(f'cols: {cols}')
 
-#Read Labels
-labels = sys.argv[2]
-f = open(labels)
-trainlabels = {}
+# Read Labels
+label_data = sys.argv[2]
+f = open(label_data)
+labels = {}
 
 n = []
 n.append(0)
@@ -31,73 +34,77 @@ n.append(0)
 l = f.readline()
 while(l != ''):
     a = l.split()
-    trainlabels[int(a[1])] = int(a[0])
+    labels[int(a[1])] = int(a[0])
     l = f.readline()
 f.close()
 
+# print(data)
+# print(labels)
+
+# dot product function
+
+
+def dot_product(refw, refx):
+    dot_product = 0
+    for j in range(0, cols, 1):
+        dot_product += refw[j]*refx[j]
+    return dot_product
+
 
 # Initialize w
-w=[]
-for j in range(0,cols,1):
-	w.append(float(0.02*random.random() - 0.01))	
+w = []
+for j in range(0, cols, 1):
+    w.append(float(0.02*random.uniform(0, 1) - 0.01))
+# print(f'w: {w}')
+# dellf descent iteration
+eta = 0.001
+stop_condition = 0.001
+error = 0
 
-#print(w)
+# compute dellf and error
+for k in range(0, 10):
+    dellf = []
+    prev_iter_error = error
+    for i in range(0, rows, 1):
+        if (labels.get(i) != None):
+            dp = dot_product(w, data[i])
+            for j in range(0, cols, 1):
+                dellf.append(float((labels[i]-dp)*data[i][j]))
 
-#dot product function
-def dot_product(refw,refx):
-        dot_product=0
-        for j in range(0,cols,1):
-                dot_product += refw[j]*refx[j]
-        return dot_product
+    # print(f'dellf: {dellf}')
 
-#Initialize w
-w=[]
-for j in range(0,cols,1):
-	w.append(float(0.02*random.random()- 0.01))	
+    # update w
+    for j in range(0, cols, 1):
+        w[j] += eta*dellf[j]
+    # print(f'w[j]: {w[j]}')
 
-#gradient descent iteration
-eta=0.001
-stop_condition=0.001
-error=0
+    # compute error
+    error = 0
+    for i in range(0, rows, 1):
+        if (labels.get(i) != None):
+            error += (labels[i] - dot_product(w, data[i]))**2
+            # print("error: ", error)
+    # print("prevError", prev_iter_error)
 
-while True:
-	prevobj=error
-	#compute gradient and error
-	gradient=[]
-	error=0
-	for i in range (0,rows,1):
-		if (trainlabels.get(i) != None and trainlabels.get(i) == 0):
-			dp=dot_product(w,data[i]);
-			error += (trainlabels[i] - dp)**2
-			for j in range (0,cols,1):
-				gradient.append(float((trainlabels[i]-dp)*data[i][j]))
-	
-	if abs(prevobj-error)<=stop_condition:       
-	        break 
-	#update w
-	for j in range (0,cols,1):
-		w[j]=w[j]+eta*gradient[j]
+    # if abs(prev_iter_error - error) <= stop_condition:
+    #     break
 
-#distance from origin calculation
-print("w: ", end='')
-normw=0
-for j in range(0,cols-1,1):
-	print(abs(w[j]),'', end='')
-	normw += w[j]**2
-print()
+
+# distance from origin calculation
+normw = 0
+for j in range(0, cols-1, 1):
+    normw += w[j]**2
+    print(f'w: {abs(w[j])}')
 
 normw = math.sqrt(normw)
-d_origin = abs(w[len(w)-1]/normw)
-print("distance from origin: ",d_origin)
+origin_distance = abs(w[len(w)-1]/normw)
+print('distance from origin: ', origin_distance)
 
-#prediction
-for i in range(0,rows,1):
-    if (trainlabels.get(i) == None):
-        dp=0
-        for j in range(0,cols,1):
-            dp+=data[i][j]*w[j]
-            
-        if dp>0:
-            print("1,",i)
+# prediction
+for i in range(0, rows, 1):
+    if (labels.get(i) == None):
+        dp = dot_product(w, data[i])
+        if dp > 0:
+            print("1,", i)
         else:
-            print("0,",i)
+            print("0,", i)
