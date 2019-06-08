@@ -59,11 +59,11 @@ for j in range(0, cols, 1):
 
 # dellf descent iteration
 eta = 0.0001
-stop_condition = 0.001
+stop = 0.001
 error = 0
 
 # compute dellf and error
-for k in range(0, 100000):
+while True:
     dellf = []
     dellf.extend(0 for _ in range(cols))
     prev_iter_error = error
@@ -90,7 +90,7 @@ for k in range(0, 100000):
     # print("prevError", prev_iter_error)
     # print("error diff", abs(prev_iter_error - error))
 
-    if abs(prev_iter_error - error) <= stop_condition:
+    if abs(prev_iter_error - error) <= stop:
         break
 
 
