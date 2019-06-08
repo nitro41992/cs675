@@ -1,5 +1,6 @@
 import sys
 import math
+import random
 
 
 #Read File
@@ -8,7 +9,6 @@ f = open(datafile)
 data = []
 i = 0
 l = f.readline()
-
 while (l != ''):
     a = l.split()
     l2 = []
@@ -21,8 +21,8 @@ cols = len(data[0])
 f.close()
 
 #Read Labels
-labelfile = sys.argv[2]
-f = open(labelfile)
+labels = sys.argv[2]
+f = open(labels)
 trainlabels = {}
 
 n = []
@@ -33,112 +33,71 @@ while(l != ''):
     a = l.split()
     trainlabels[int(a[1])] = int(a[0])
     l = f.readline()
-    n[int(a[0])] += 1
+f.close()
 
-
-#Compute Mean
-mean0 = []
-for j in range(0, cols, 1):
-    mean0.append(1)
-mean1 = []
-for j in range(0, cols, 1):
-    mean1.append(1)
-
-
-for i in range(0, rows, 1):
-    if (trainlabels.get(i) != None) and (trainlabels[i] == 0):
-        for j in range(0, cols, 1):
-            mean0[j] += data[i][j]
-    if (trainlabels.get(i) != None) and (trainlabels[i] == 1):
-        for j in range(0, cols, 1):
-            mean1[j] += data[i][j]
-for j in range(0, cols, 1):
-    mean0[j] /= n[0]
-    mean1[j] /= n[1]
 
 # Initialize w
 w=[]
-prevW=[]
-for i in range(0, cols, 1):
-	prevW.append(float(2))
-	w.append(float(0))
-	w[i]=mean1[i]-mean0[i]
+for j in range(0,cols,1):
+	w.append(float(0.02*random.random() - 0.01))	
 
+#print(w)
 
-#####################################
-###		compute until convergence
-#####################################
+#dot product function
+def dot_product(refw,refx):
+        dot_product=0
+        for j in range(0,cols,1):
+                dot_product += refw[j]*refx[j]
+        return dot_product
 
-sum=1
-prevsum=0
-print("while loop starting")
+#Initialize w
+w=[]
+for j in range(0,cols,1):
+	w.append(float(0.02*random.random()- 0.01))	
 
+#gradient descent iteration
+eta=0.001
+stop_condition=0.001
+error=0
 
-while(abs(sum-prevsum)>0.001):	
-
-	delF=[] #start delF at 0 everytime we do an iteration.
-	for i in range(0, cols, 1):
-		delF.append(float(0)) ##as many columns, or dimensions of data, there are in the datapoints will be needed in delF
-
-	for i in range(0, rows, 1):
-		for j in range(0, cols, 1):
-			dotprod=0
-			for wcols in range(0, cols, 1):
-				dotprod+=w[wcols]*data[i][wcols]
-			delF[j]+= 2*(trainlabels.get(i) - dotprod)*data[i][j]
-
-	for j in range(0, cols, 1):
-			w[j]=w[j]+0.000000000000000001*float(delF[j])
+while True:
+	prevobj=error
+	#compute gradient and error
+	gradient=[]
+	error=0
+	for i in range (0,rows,1):
+		if (trainlabels.get(i) != None and trainlabels.get(i) == 0):
+			dp=dot_product(w,data[i]);
+			error += (trainlabels[i] - dp)**2
+			for j in range (0,cols,1):
+				gradient.append(float((trainlabels[i]-dp)*data[i][j]))
 	
-	
-	prevsum=sum
-	sum=0
-	for i in range(0, rows, 1):
-		for j in range(0, cols, 1):
-			dotprod=0;
-			for wcols in range(0, 3 ,1):
-				dotprod+=w[wcols]*data[i][wcols]
-			sum+=(trainlabels.get(i)-dotprod)**2
-	print("Sum is: " + str(sum) + " prevsum is: " + str(prevsum))
-print("When using the stopping point of 0.001, w is: ")
-print(w)
-magnitude =0
-for i in range(0, cols-1, 1):
-	magnitude+= w[i]**2
-magnitude=math.sqrt(magnitude)
-print("The distance of plane to origin is about", abs(w[cols-1]/magnitude))
+	if abs(prevobj-error)<=stop_condition:       
+	        break 
+	#update w
+	for j in range (0,cols,1):
+		w[j]=w[j]+eta*gradient[j]
 
+#distance from origin calculation
+print("w: ", end='')
+normw=0
+for j in range(0,cols-1,1):
+	print(abs(w[j]),'', end='')
+	normw += w[j]**2
+print()
 
-########################
-### Classify unlabld points
-##########################
+normw = math.sqrt(normw)
+d_origin = abs(w[len(w)-1]/normw)
+print("distance from origin: ",d_origin)
 
-print("classifying!\n\n\n\n")
-testfile = sys.argv[3];
-t = open(testfile);
-test = []
-l=t.readline()
-output = open("testoutput.txt", "r+")
-trow=0;
-while(l != ''):
-	a=l.split()
-	l2=[]
-	for j in range(0, len(a), 1):
-		l2.append(int(a[j]))
-	l2.append(1); #for the w0;
-	sum=0
-	for j in range(0, len(a), 1):
-		sum+=w[j]*l2[j]; ##get the sum wTx+w0 = y.
-	print(sum)
-	if (sum>0):
-		output.write(str(1) + " " + str(trow) + "\n")
-	else:
-		output.write(str(0) + " " + str(trow) + "\n")
-	trow+=1
-	test.append(l2)
-	l=t.readline()
-
-output.close()
-t.close()
-print("The columns used are as follows\n")
-print(w)
+#prediction
+for i in range(0,rows,1):
+    if (trainlabels.get(i) == None):
+        dp=0
+        for j in range(0,cols,1):
+            dp+=data[i][j]*w[j]
+            
+        if dp>0:
+            print("1,",i)
+        else:
+            print("0,",i)
