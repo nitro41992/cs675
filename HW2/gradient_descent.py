@@ -16,6 +16,8 @@ while (l != ''):
         l2.append(float(a[j]))
     data.append(l2)
     l = f.readline()
+    data[i].append(1)
+    i += 1
 rows = len(data)
 cols = len(data[0])
 f.close()
@@ -28,13 +30,13 @@ label_data = sys.argv[2]
 f = open(label_data)
 labels = {}
 
-n = []
-n.append(0)
-n.append(0)
+
 l = f.readline()
 while(l != ''):
     a = l.split()
     labels[int(a[1])] = int(a[0])
+    if(labels[int(a[1])] == 0):
+        labels[int(a[1])] = -1
     l = f.readline()
 f.close()
 
@@ -93,13 +95,11 @@ while True:
     if abs(prev_iter_error - error) <= stop:
         break
 
-print(f'Final w: {w}')
-
 # distance from origin calculation (pythagorean theorem)
 normw = 0
 for j in range(0, cols-1, 1):
     normw += w[j]**2
-    print(f'normw: {abs(w[j])}')
+    print(f'w{j}: {abs(w[j])}')
 
 normw = math.sqrt(normw)
 origin_distance = abs(w[len(w)-1]/normw)
