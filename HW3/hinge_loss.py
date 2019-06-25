@@ -42,8 +42,8 @@ while(l != ''):
     l = f.readline()
 f.close()
 
-print(data)
-print(labels)
+# print(data)
+# print(labels)
 
 # dot product function
 
@@ -98,21 +98,19 @@ while (diff > 0.00000001):
 
     diff = abs(prevObj - error)
 
-    print(f'diff: {diff}')
+    # print(f'diff: {diff}')
     # print("error: ", error)
-    # print("prevObjerror", prevObj_iter_error)
-    # print("error diff", abs(prevObj_iter_error - error))
 
-print(f'w: {w}')
+print(f'w =  {w[0:2]}')
 # distance from origin calculation (pythagorean theorem)
 normw = 0
 for j in range(0, cols-1, 1):
     normw += w[j]**2
-    print(f'w{j}: {abs(w[j])}')
+print(f'w0 = {w[2]}')
 
 normw = math.sqrt(normw)
 origin_distance = abs(w[len(w)-1]/normw)
-print('distance from origin: ', origin_distance)
+print('distance from origin =  ', origin_distance)
 
 # prediction
 for i in range(0, rows, 1):
