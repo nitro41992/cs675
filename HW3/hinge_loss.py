@@ -65,10 +65,11 @@ for j in range(0, cols, 1):
 eta = 0.001
 diff = 1
 error = 0
+stop = 0.00000001
 count = 0
 
 # compute dellf and error
-while (diff > 0.00000001):
+while (diff > stop):
     dellf = []
     dellf.extend(0 for _ in range(cols))
 
