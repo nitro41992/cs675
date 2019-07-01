@@ -21,9 +21,6 @@ while (l != ''):
 rows = len(data)
 cols = len(data[0])
 f.close()
-# print(f'Data: {data}')
-# print(f'rows: {rows}')
-# print(f'cols: {cols}')
 
 # Read Labels
 label_data = sys.argv[2]
@@ -40,12 +37,7 @@ while(l != ''):
     l = f.readline()
 f.close()
 
-# print(data)
-# print(labels)
-
 # dot product function
-
-
 def dot_product(refw, refx):
     dot_product = 0
     for j in range(0, cols, 1):
@@ -75,22 +67,15 @@ while True:
             for j in range(0, cols, 1):
                 dellf[j] += float((labels[i]-dp)*data[i][j])
 
-    # print(f'dellf: {dellf}')
-
     # update w
     for j in range(0, cols, 1):
         w[j] += eta*dellf[j]
-    # print(f'w[j]: {w[j]}')
 
     # compute error
     error = 0
     for i in range(0, rows, 1):
         if (labels.get(i) != None):
             error += (labels[i] - dot_product(w, data[i]))**2
-
-    # print("error: ", error)
-    # print("prevError", prev_iter_error)
-    # print("error diff", abs(prev_iter_error - error))
 
     if abs(prev_iter_error - error) <= stop:
         break

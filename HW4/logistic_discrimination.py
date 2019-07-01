@@ -37,7 +37,7 @@ while(l != ''):
 f.close()
 
 # print(data)
-print(labels)
+# print(labels)
 
 # dot product function
 
@@ -59,14 +59,16 @@ def sig(a1, b1):
 # Initialize w
 w = []
 for j in range(0, cols, 1):
-    w.append(float(0.02*random.uniform(0, 1) - 0.01))
+    w.append(float(0.02*random.random() - 0.01))
 
 
 # dellf descent iteration
-eta = 0.01
+# eta = 0.01
+eta = 0.001
 diff = 1
 error = 0
-stop = 0.0000001
+# stop = 0.0000001
+stop = 0.001
 
 # compute dellf and error
 while (diff > stop):
