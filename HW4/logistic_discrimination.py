@@ -2,13 +2,14 @@ import sys
 import math
 import random
 
-
 # Read File
 datafile = sys.argv[1]
 f = open(datafile)
 data = []
 i = 0
 l = f.readline()
+
+
 while (l != ''):
     a = l.split()
     l2 = []
@@ -22,9 +23,6 @@ while (l != ''):
 rows = len(data)
 cols = len(data[0])
 f.close()
-# print(f'Data: {data}')
-# print(f'rows: {rows}')
-# print(f'cols: {cols}')
 
 # Read Labels
 label_data = sys.argv[2]
@@ -35,14 +33,10 @@ l = f.readline()
 while(l != ''):
     a = l.split()
     labels[int(a[1])] = int(a[0])
-    # if(labels[int(a[1])] == 0):
-    #     labels[int(a[1])] = -1
-    # else:
-    #     labels[int(a[1])] = 1
     l = f.readline()
 f.close()
 
-print(data)
+# print(data)
 print(labels)
 
 # dot product function
@@ -54,15 +48,12 @@ def dot_product(refw, refx):
         dot_product += refw[j]*refx[j]
     return dot_product
 
-
 def sig(a1, b1):
     dp = dot_product(a1, b1)
-    if dp < 0:
-        return 1 - 1/(1 + math.exp(dp))
-    elif dp >= 1:
-        return 0.9999999
-    else:
-        return 1/(1 + math.exp(-dp))
+    sig = 1 / (1 + math.exp(-1 * dp))
+    if (sig >= 1):
+        sig = 0.999999
+    return sig
 
 
 # Initialize w
@@ -76,7 +67,6 @@ eta = 0.01
 diff = 1
 error = 0
 stop = 0.0000001
-count = 0
 
 # compute dellf and error
 while (diff > stop):
@@ -85,7 +75,6 @@ while (diff > stop):
 
     for i in range(0, rows, 1):
         if (labels.get(i) != None):
-            # a = labels[i] * dot_product(w, data[i])
             a = sig(w, data[i]) - labels[i]
             for j in range(0, cols):
                 dellf[j] += a * data[i][j]
@@ -103,15 +92,17 @@ while (diff > stop):
 
     for i in range(0, rows, 1):
         if (labels.get(i) != None):
-            error += -1 * (labels[j] * math.log(sig(w, data[j])) +
-                           ((1 - labels[j]) * math.log(1 - sig(w, data[j]))))
+            error += -1 * (labels[i] * math.log(sig(w, data[i])) +
+                           ((1 - labels[i]) * math.log(1 - sig(w, data[i]))))
 
-    diff = abs(prevObj - error)
+        diff = abs(prevObj - error)
 
     # print(f'diff: {diff}')
     # print("error: ", error)
 
 print(f'w =  {w[0:2]}')
+
+
 # distance from origin calculation (pythagorean theorem)
 normw = 0
 for j in range(0, cols-1, 1):
@@ -121,7 +112,7 @@ for j in range(0, cols-1, 1):
 normw = math.sqrt(normw)
 print(f'||w|| = {normw}')
 
-origin_distance = abs(w[len(w)-1]/normw)
+origin_distance = w[len(w)-1]/normw
 print('distance from origin = ', origin_distance)
 
 # prediction
