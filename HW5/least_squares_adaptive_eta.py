@@ -125,16 +125,16 @@ while True:
     if abs(prev_iter_error - error) <= stop:
         break
 
-# print(best_eta)
+# print('distance from origin: ', origin_distance)
 # distance from origin calculation (pythagorean theorem)
 normw = 0
 for j in range(0, cols-1, 1):
     normw += w[j]**2
-    print(f'w{j}: {abs(w[j])}')
+    # print(f'w{j}: {abs(w[j])}')
 
 normw = math.sqrt(normw)
 origin_distance = abs(w[len(w)-1]/normw)
-print('distance from origin: ', origin_distance)
+# print('distance from origin: ', origin_distance)
 
 # prediction
 for i in range(0, rows, 1):
