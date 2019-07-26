@@ -1,5 +1,6 @@
 import sys
-
+import random
+import math
 
 def classes(dataset, labelCol):
     return list(set(row[labelCol] for row in dataset))
