@@ -31,7 +31,7 @@ def data_set(fea, dat):
 
 
 def train_test_split(data, labels, test_size=0.1):
-    random.seed(9001)
+    random.seed(23)
     num_of_test_data = len(data) * test_size
     test_indexes = random.sample(range(len(data)), int(num_of_test_data))
     X_train = []
