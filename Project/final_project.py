@@ -2,7 +2,6 @@ import sys
 import array
 import copy
 import random
-
 from sklearn import svm
 from sklearn import linear_model
 from sklearn.naive_bayes import GaussianNB
@@ -33,18 +32,18 @@ def train_test_split(data, labels, test_size=0.1):
     random.seed(23)
     num_of_test_data = len(data) * test_size
     test_indexes = random.sample(range(len(data)), int(num_of_test_data))
-    X_train = []
-    X_test = []
+    x_train = []
+    x_test = []
     y_train = []
     y_test = []
     for feat_i in range(len(data)):
         if feat_i not in test_indexes:
-            X_train.append(data[feat_i])
+            x_train.append(data[feat_i])
             y_train.append(labels[feat_i])
         else:
-            X_test.append(data[feat_i])
+            x_test.append(data[feat_i])
             y_test.append(labels[feat_i])
-    return X_train, X_test, y_train, y_test
+    return x_train, x_test, y_train, y_test
 
 
 def PearsonCorrelation(x, y, fi):
@@ -136,30 +135,30 @@ iterations = 5
 for i in range(iterations):
 
     print(i)
-    X_train, X_test, y_train, y_test = train_test_split(
+    x_train, x_test, y_train, y_test = train_test_split(
         data1, trainlabels, test_size=0.3)
 
-    newRows = len(X_train)
-    newCols = len(X_train[0])
-    newRowst = len(X_test)
-    newColst = len(X_test[0])
+    newRows = len(x_train)
+    newCols = len(x_train[0])
+    newRowst = len(x_test)
+    newColst = len(x_test[0])
     newRowsL = len(y_train)
 
-    PearFeatures = PearsonCorrelation(X_train, y_train, feat)
+    PearFeatures = PearsonCorrelation(x_train, y_train, feat)
 
     allFeatures.append(PearFeatures)
     argument = copy.deepcopy(PearFeatures)
 
-    data_fea = data_set(argument, X_train)
+    data_fea = data_set(argument, x_train)
 
     clf_svm.fit(data_fea, y_train)
     clf_log.fit(data_fea, y_train)
     clf_gnb.fit(data_fea, y_train)
     clf_nc.fit(data_fea, y_train)
 
-    TestFeatures = PearsonCorrelation(X_test, y_test, feat)
+    TestFeatures = PearsonCorrelation(x_test, y_test, feat)
 
-    test_fea = data_set(TestFeatures, X_test)
+    test_fea = data_set(TestFeatures, x_test)
 
     len_test_fea = len(test_fea)
     counter_svm = 0
