@@ -31,6 +31,7 @@ while(l != ''):
     l = f.readline()
 f.close()
 
+
 def classes(dataset, col_label):
     return list(set(row[col_label] for row in dataset))
 
@@ -109,7 +110,7 @@ def get_split(dataset, col_label):
 
 def get_split_line(col_num, coord, dataset):
     win_col = list()
-    max = -9999  
+    max = -9999
     for r in range(len(dataset)):
         win_col.append(dataset[r][col_num])
     win_col.sort()
@@ -121,7 +122,6 @@ def get_split_line(col_num, coord, dataset):
 
     s = (max + coord) / 2
     return s
-
 
 
 predicted = list()
