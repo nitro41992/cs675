@@ -51,7 +51,7 @@ i = 0
 l = f.readline()
 
 while (l != ''):
-    l = l.strp('\n')
+    l = l.strip('\n')
     a = l.split()
     l2 = []
     for j in range(0, len(a), 1):
