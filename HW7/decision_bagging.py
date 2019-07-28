@@ -37,6 +37,8 @@ def bestsplit(data, labels, col):
         if(labels[sorted_indicies[i]] == 0):
             lp += 1
             rp -= 1
+        lsize += 1
+        rsize -= 1
 
     return(best_s, bestgini)
 
@@ -48,8 +50,8 @@ data = []
 i = 0
 l = f.readline()
 
-
 while (l != ''):
+    l = l.strp('\n')
     a = l.split()
     l2 = []
     for j in range(0, len(a), 1):
@@ -77,7 +79,6 @@ f.close()
 
 
 # Main
-
 boots = 100
 test_predictions = {}
 for i in range(0, rows, 1):
