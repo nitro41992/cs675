@@ -1,10 +1,12 @@
 import sys
 import array
 import copy
+import random
+
 from sklearn import svm
 from sklearn import linear_model
 from sklearn.naive_bayes import GaussianNB
-from sklearn.model_selection import train_test_split
+# from sklearn.model_selection import train_test_split
 from sklearn.neighbors.nearest_centroid import NearestCentroid
 
 
@@ -16,7 +18,7 @@ def mergeColumn(a, b):
     return [x + y for x, y in zip(a, b)]
 
 
-def CreateDataSet(fea, dat):
+def data_set(fea, dat):
     newData = extractColumn(dat, fea[0])
     newLab = array.array("i")
     fea.remove(fea[0])
@@ -26,6 +28,24 @@ def CreateDataSet(fea, dat):
         newData = mergeColumn(newData, temp)
         fea.remove(fea[0])
     return newData
+
+
+def train_test_split(data, labels, test_size=0.1):
+    random.seed(9001)
+    num_of_test_data = len(data) * test_size
+    test_indexes = random.sample(range(len(data)), int(num_of_test_data))
+    X_train = []
+    X_test = []
+    y_train = []
+    y_test = []
+    for feat_i in range(len(data)):
+        if feat_i not in test_indexes:
+            X_train.append(data[feat_i])
+            y_train.append(labels[feat_i])
+        else:
+            X_test.append(data[feat_i])
+            y_test.append(labels[feat_i])
+    return X_train, X_test, y_train, y_test
 
 
 def PearsonCorrelation(x, y, fi):
@@ -95,7 +115,7 @@ neededFea = PearsonCorrelation(data, trainlabels, 2000)
 print("Done with feature selection", end="")
 
 savedFea = copy.deepcopy(neededFea)
-data1 = CreateDataSet(neededFea, data)
+data1 = data_set(neededFea, data)
 
 clf_svm = svm.SVC(gamma=0.001)
 clf_log = linear_model.LogisticRegression()
@@ -131,7 +151,7 @@ for i in range(iterations):
     allFeatures.append(PearFeatures)
     argument = copy.deepcopy(PearFeatures)
 
-    data_fea = CreateDataSet(argument, X_train)
+    data_fea = data_set(argument, X_train)
 
     clf_svm.fit(data_fea, y_train)
     clf_log.fit(data_fea, y_train)
@@ -140,7 +160,7 @@ for i in range(iterations):
 
     TestFeatures = PearsonCorrelation(X_test, y_test, feat)
 
-    test_fea = CreateDataSet(TestFeatures, X_test)
+    test_fea = data_set(TestFeatures, X_test)
 
     len_test_fea = len(test_fea)
     counter_svm = 0
@@ -197,7 +217,7 @@ print("The features are: ", originalFea)
 
 # Calculate Accuracy
 argument1 = copy.deepcopy(originalFea)
-AccData = CreateDataSet(argument1, data)
+AccData = data_set(argument1, data)
 
 clf_svm.fit(AccData, trainlabels)
 clf_log.fit(AccData, trainlabels)
@@ -240,7 +260,7 @@ with open(testfile, "r") as infile:
         testdata.append(l)
 
 argument2 = copy.deepcopy(originalFea)
-testdata1 = CreateDataSet(argument2, testdata)
+testdata1 = data_set(argument2, testdata)
 
 # create a file
 f1 = open("testLabels", "w+")
