@@ -6,7 +6,6 @@ import random
 from sklearn import svm
 from sklearn import linear_model
 from sklearn.naive_bayes import GaussianNB
-# from sklearn.model_selection import train_test_split
 from sklearn.neighbors.nearest_centroid import NearestCentroid
 
 
@@ -23,7 +22,7 @@ def data_set(fea, dat):
     newLab = array.array("i")
     fea.remove(fea[0])
     length = len(fea)
-    for i in range(0, length, 1):
+    for _ in range(0, length, 1):
         temp = extractColumn(dat, fea[0])
         newData = mergeColumn(newData, temp)
         fea.remove(fea[0])
