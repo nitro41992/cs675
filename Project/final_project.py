@@ -3,27 +3,29 @@ import array
 import copy
 import random
 from sklearn import svm
-from sklearn import linear_model
-from sklearn.naive_bayes import GaussianNB
-from sklearn.neighbors.nearest_centroid import NearestCentroid
+# from sklearn import linear_model
+# from sklearn.naive_bayes import GaussianNB
+# from sklearn.neighbors.nearest_centroid import NearestCentroid
 
 
-def extractColumn(arg_matrix, i):
-    return [[row[i]] for row in arg_matrix]
+# def extractColumn(arg_matrix, i):
+#     return [[row[i]] for row in arg_matrix]
 
 
-def mergeColumn(a, b):
-    return [x + y for x, y in zip(a, b)]
+# def mergeColumn(a, b):
+#     return [x + y for x, y in zip(a, b)]
 
 
 def data_set(fea, dat):
-    newData = extractColumn(dat, fea[0])
-    newLab = array.array("i")
+    newData = [[row[fea[0]]] for row in dat]
+    # extractColumn(dat, fea[0])
     fea.remove(fea[0])
     length = len(fea)
     for _ in range(0, length, 1):
-        temp = extractColumn(dat, fea[0])
-        newData = mergeColumn(newData, temp)
+        temp = [[row[fea[0]]] for row in dat]
+        # extractColumn(dat, fea[0])
+        newData = [x + y for x, y in zip(newData, temp)]
+        # mergeColumn(newData, temp)
         fea.remove(fea[0])
     return newData
 
@@ -116,9 +118,9 @@ savedFea = copy.deepcopy(neededFea)
 data1 = data_set(neededFea, data)
 
 clf_svm = svm.SVC(gamma=0.001)
-clf_log = linear_model.LogisticRegression()
-clf_gnb = GaussianNB()
-clf_nc = NearestCentroid()
+# clf_log = linear_model.LogisticRegression()
+# clf_gnb = GaussianNB()
+# clf_nc = NearestCentroid()
 
 allAccuracies = array.array("f")
 allFeatures = []
@@ -152,9 +154,9 @@ for i in range(iterations):
     data_fea = data_set(argument, x_train)
 
     clf_svm.fit(data_fea, y_train)
-    clf_log.fit(data_fea, y_train)
-    clf_gnb.fit(data_fea, y_train)
-    clf_nc.fit(data_fea, y_train)
+    # clf_log.fit(data_fea, y_train)
+    # clf_gnb.fit(data_fea, y_train)
+    # clf_nc.fit(data_fea, y_train)
 
     TestFeatures = PearsonCorrelation(x_test, y_test, feat)
 
@@ -169,32 +171,33 @@ for i in range(iterations):
 
     for j in range(0, len_test_fea, 1):
         predLab_svm = int(clf_svm.predict([test_fea[j]]))
-        predLab_log = int(clf_log.predict([test_fea[j]]))
-        predLab_gnb = int(clf_gnb.predict([test_fea[j]]))
-        predLab_nc = int(clf_nc.predict([test_fea[j]]))
-        h = predLab_svm + predLab_log + predLab_gnb + predLab_nc
-        if (h >= 3):
-            my_predLab = 1
-        elif (h <= 1):
-            my_predLab = 0
-        else:
-            my_predLab = predLab_svm
-        if (my_predLab == y_test[j]):
-            my_counter += 1
-        if (predLab_svm == y_test[j]):
-            counter_svm += 1
-        if (predLab_log == y_test[j]):
-            counter_log += 1
-        if (predLab_gnb == y_test[j]):
-            counter_gnb += 1
-        if (predLab_nc == y_test[j]):
-            counter_nc += 1
+        # predLab_log = int(clf_log.predict([test_fea[j]]))
+        # predLab_gnb = int(clf_gnb.predict([test_fea[j]]))
+        # predLab_nc = int(clf_nc.predict([test_fea[j]]))
+        h = predLab_svm  # + predLab_log + predLab_gnb + predLab_nc
+        # if (h >= 3):
+        #     my_predLab = 1
+        # elif (h <= 1):
+        #     my_predLab = 0
+        # else:
+        my_predLab = predLab_svm
+
+        # if (my_predLab == y_test[j]):
+        #     my_counter += 1
+        # if (predLab_svm == y_test[j]):
+        counter_svm += 1
+        # if (predLab_log == y_test[j]):
+        #     counter_log += 1
+        # if (predLab_gnb == y_test[j]):
+        #     counter_gnb += 1
+        # if (predLab_nc == y_test[j]):
+        #     counter_nc += 1
 
     accuracy_svm += counter_svm / len_test_fea
-    accuracy_log += counter_log / len_test_fea
+    # accuracy_log += counter_log / len_test_fea
 
-    accuracy_gnb += counter_gnb / len_test_fea
-    accuracy_nc += counter_nc / len_test_fea
+    # accuracy_gnb += counter_gnb / len_test_fea
+    # accuracy_nc += counter_nc / len_test_fea
 
     my_accuracy += my_counter / len_test_fea
     allAccuracies.append(my_counter / len_test_fea)
@@ -218,19 +221,19 @@ argument1 = copy.deepcopy(originalFea)
 AccData = data_set(argument1, data)
 
 clf_svm.fit(AccData, trainlabels)
-clf_log.fit(AccData, trainlabels)
-clf_gnb.fit(AccData, trainlabels)
-clf_nc.fit(AccData, trainlabels)
+# clf_log.fit(AccData, trainlabels)
+# clf_gnb.fit(AccData, trainlabels)
+# clf_nc.fit(AccData, trainlabels)
 
 svm_counter = 0
 LeCounter = 0
 k = len(AccData)
 for i in range(0, k, 1):
     predLab_svm = int(clf_svm.predict([AccData[i]]))
-    predLab_log = int(clf_log.predict([AccData[i]]))
-    predLab_gnb = int(clf_gnb.predict([AccData[i]]))
-    predLab_nc = int(clf_nc.predict([AccData[i]]))
-    h = predLab_svm + predLab_log + predLab_gnb + predLab_nc
+    # predLab_log = int(clf_log.predict([AccData[i]]))
+    # predLab_gnb = int(clf_gnb.predict([AccData[i]]))
+    # predLab_nc = int(clf_nc.predict([AccData[i]]))
+    h = predLab_svm  # + predLab_log + predLab_gnb + predLab_nc
     if (h >= 3):
         my_predLab = 1
     elif (h <= 1):
@@ -265,10 +268,10 @@ f1 = open("testLabels", "w+")
 
 for i in range(0, len(testdata1), 1):
     lab1 = int(clf_svm.predict([testdata1[i]]))
-    lab2 = int(clf_log.predict([testdata1[i]]))
-    lab3 = int(clf_gnb.predict([testdata1[i]]))
-    lab4 = int(clf_nc.predict([testdata1[i]]))
-    h = lab1 + lab2 + lab3 + lab4
+    # lab2 = int(clf_log.predict([testdata1[i]]))
+    # lab3 = int(clf_gnb.predict([testdata1[i]]))
+    # lab4 = int(clf_nc.predict([testdata1[i]]))
+    h = lab1  # + lab2 + lab3 + lab4
     if (h >= 3):
         f1.write(str(1) + " " + str(i) + "\n")
     elif (h <= 1):
