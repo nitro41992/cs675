@@ -112,7 +112,7 @@ rowsl = len(trainlabels)
 # Dimensionality Reduction
 print("Feature Selection started")
 neededFea = PearsonCorrelation(data, trainlabels, 2000)
-print("Done with feature selection", end="")
+print("Done with feature selection\n", end="")
 
 savedFea = copy.deepcopy(neededFea)
 data1 = data_set(neededFea, data)
@@ -127,9 +127,9 @@ allFeatures = []
 
 accuracy_svm = 0
 accuracy_score = 0
-accuracy_log = 0
-accuracy_gnb = 0
-accuracy_nc = 0
+# accuracy_log = 0
+# accuracy_gnb = 0
+# accuracy_nc = 0
 
 my_accuracy = 0
 
@@ -164,9 +164,9 @@ for i in range(iterations):
 
     len_test_fea = len(test_fea)
     counter_svm = 0
-    counter_log = 0
-    counter_gnb = 0
-    counter_nc = 0
+    # counter_log = 0
+    # counter_gnb = 0
+    # counter_nc = 0
     my_counter = 0
 
     for j in range(0, len_test_fea, 1):
@@ -175,17 +175,17 @@ for i in range(iterations):
         # predLab_gnb = int(clf_gnb.predict([test_fea[j]]))
         # predLab_nc = int(clf_nc.predict([test_fea[j]]))
         h = predLab_svm  # + predLab_log + predLab_gnb + predLab_nc
-        # if (h >= 3):
-        #     my_predLab = 1
-        # elif (h <= 1):
-        #     my_predLab = 0
-        # else:
-        my_predLab = predLab_svm
+        if (h >= 3):
+            my_predLab = 1
+        elif (h <= 1):
+            my_predLab = 0
+        else:
+            my_predLab = predLab_svm
 
         # if (my_predLab == y_test[j]):
         #     my_counter += 1
-        # if (predLab_svm == y_test[j]):
-        counter_svm += 1
+        if (predLab_svm == y_test[j]):
+            counter_svm += 1
         # if (predLab_log == y_test[j]):
         #     counter_log += 1
         # if (predLab_gnb == y_test[j]):
@@ -226,7 +226,7 @@ clf_svm.fit(AccData, trainlabels)
 # clf_nc.fit(AccData, trainlabels)
 
 svm_counter = 0
-LeCounter = 0
+# LeCounter = 0
 k = len(AccData)
 for i in range(0, k, 1):
     predLab_svm = int(clf_svm.predict([AccData[i]]))
@@ -240,14 +240,14 @@ for i in range(0, k, 1):
         my_predLab = 0
     else:
         my_predLab = predLab_svm
-    if (my_predLab == trainlabels[i]):
-        LeCounter += 1
+    # if (my_predLab == trainlabels[i]):
+    #     LeCounter += 1
     if (predLab_svm == trainlabels[i]):
         svm_counter += 1
 
-FinalAcc = LeCounter / k
+# FinalAcc = LeCounter / k
 SVMAc = svm_counter / k
-print("Accuracy: ", FinalAcc * 100)
+print("Accuracy: ", SVMAc * 100)
 
 # Read Test data
 testfile = sys.argv[3]
