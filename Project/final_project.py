@@ -3,43 +3,35 @@ import array
 import copy
 import random
 from sklearn import svm
-# from sklearn import linear_model
-# from sklearn.naive_bayes import GaussianNB
-# from sklearn.neighbors.nearest_centroid import NearestCentroid
+
+seed = 23
+size = 0.1
+gamma = 0.001
+iterations = 5
 
 
-# def extractColumn(arg_matrix, i):
-#     return [[row[i]] for row in arg_matrix]
+def data_set(feature, data):
+    newData = [[row[feature[0]]] for row in data]
 
-
-# def mergeColumn(a, b):
-#     return [x + y for x, y in zip(a, b)]
-
-
-def data_set(fea, dat):
-    newData = [[row[fea[0]]] for row in dat]
-    # extractColumn(dat, fea[0])
-    fea.remove(fea[0])
-    length = len(fea)
+    feature.remove(feature[0])
+    length = len(feature)
     for _ in range(0, length, 1):
-        temp = [[row[fea[0]]] for row in dat]
-        # extractColumn(dat, fea[0])
-        newData = [x + y for x, y in zip(newData, temp)]
-        # mergeColumn(newData, temp)
-        fea.remove(fea[0])
+        data_set = [[row[feature[0]]] for row in data]
+        newData = [x + y for x, y in zip(newData, data_set)]
+        feature.remove(feature[0])
     return newData
 
 
-def train_test_split(data, labels, test_size=0.1):
-    random.seed(23)
+def split(data, labels, test_size=size):
+    random.seed(seed)
     num_of_test_data = len(data) * test_size
-    test_indexes = random.sample(range(len(data)), int(num_of_test_data))
+    indicies = random.sample(range(len(data)), int(num_of_test_data))
     x_train = []
     x_test = []
     y_train = []
     y_test = []
     for feat_i in range(len(data)):
-        if feat_i not in test_indexes:
+        if feat_i not in indicies:
             x_train.append(data[feat_i])
             y_train.append(labels[feat_i])
         else:
@@ -48,7 +40,7 @@ def train_test_split(data, labels, test_size=0.1):
     return x_train, x_test, y_train, y_test
 
 
-def PearsonCorrelation(x, y, fi):
+def pearson_correlation(x, y, fi):
     sumX = 0
     sumX2 = 0
     ro = len(x)
@@ -83,201 +75,156 @@ def PearsonCorrelation(x, y, fi):
 
 
 # Read data file
-datafile = sys.argv[1]
+data_file = sys.argv[1]
 data = []
-with open(datafile, "r") as infile:
-    for line in infile:
-        temp = line.split()
+with open(data_file, "r") as file:
+    for line in file:
+        s = line.split()
         l = array.array("i")
-        for i in temp:
+        for i in s:
             l.append(int(i))
         data.append(l)
 
 # Read labels from file
-print("Reading data file", end="")
-labelfile = sys.argv[2]
+print("Started Reading Data...", end="")
+labels = sys.argv[2]
 trainlabels = array.array("i")
-with open(labelfile, "r") as infile:
-    for line in infile:
-        temp = line.split()
-        trainlabels.append(int(temp[0]))
+with open(labels, "r") as file:
+    for line in file:
+        s = line.split()
+        trainlabels.append(int(s[0]))
 
-print("Reading data complete", end="")
+print("\nReading Data Completed.", end="")
 
-feat = 10
+feature_count = 10
 rows = len(data)
 cols = len(data[0])
-rowsl = len(trainlabels)
+rows = len(trainlabels)
 
 # Dimensionality Reduction
-print("Feature Selection started")
-neededFea = PearsonCorrelation(data, trainlabels, 2000)
-print("Done with feature selection\n", end="")
+print("\nStarted Feature Selection...")
+pc_features = pearson_correlation(data, trainlabels, 2000)
+print("\nFeature Selection Complete.", end="")
 
-savedFea = copy.deepcopy(neededFea)
-data1 = data_set(neededFea, data)
+saved_features = copy.deepcopy(pc_features)
+updated_data = data_set(pc_features, data)
 
-clf_svm = svm.SVC(gamma=0.001)
-# clf_log = linear_model.LogisticRegression()
-# clf_gnb = GaussianNB()
-# clf_nc = NearestCentroid()
+svc = svm.SVC(gamma=gamma)
 
-allAccuracies = array.array("f")
-allFeatures = []
+accuracy_array = array.array("f")
+feature_array = []
 
 accuracy_svm = 0
 accuracy_score = 0
-# accuracy_log = 0
-# accuracy_gnb = 0
-# accuracy_nc = 0
 
-my_accuracy = 0
+# my_accuracy = 0
 
-iterations = 5
+
 for i in range(iterations):
 
-    print(i)
-    x_train, x_test, y_train, y_test = train_test_split(
-        data1, trainlabels, test_size=0.3)
+    print("\nIteration # ", i + 1)
+    x_train, x_test, y_train, y_test = split(
+        updated_data, trainlabels, test_size=0.3)
 
-    newRows = len(x_train)
-    newCols = len(x_train[0])
-    newRowst = len(x_test)
-    newColst = len(x_test[0])
-    newRowsL = len(y_train)
+    # new_train_rows = len(x_train)
+    # new_train_cols = len(x_train[0])
+    # new_test_rows = len(x_test)
+    # new_test_cols = len(x_test[0])
+    # new_label_rows = len(y_train)
 
-    PearFeatures = PearsonCorrelation(x_train, y_train, feat)
+    corr_features = pearson_correlation(x_train, y_train, feature_count)
 
-    allFeatures.append(PearFeatures)
-    argument = copy.deepcopy(PearFeatures)
+    feature_array.append(corr_features)
+    argument = copy.deepcopy(corr_features)
 
     data_fea = data_set(argument, x_train)
 
-    clf_svm.fit(data_fea, y_train)
-    # clf_log.fit(data_fea, y_train)
-    # clf_gnb.fit(data_fea, y_train)
-    # clf_nc.fit(data_fea, y_train)
+    svc.fit(data_fea, y_train)
 
-    TestFeatures = PearsonCorrelation(x_test, y_test, feat)
+    features = pearson_correlation(x_test, y_test, feature_count)
 
-    test_fea = data_set(TestFeatures, x_test)
+    test_features = data_set(features, x_test)
 
-    len_test_fea = len(test_fea)
+    len_test_features = len(test_features)
     counter_svm = 0
-    # counter_log = 0
-    # counter_gnb = 0
-    # counter_nc = 0
     my_counter = 0
 
-    for j in range(0, len_test_fea, 1):
-        predLab_svm = int(clf_svm.predict([test_fea[j]]))
-        # predLab_log = int(clf_log.predict([test_fea[j]]))
-        # predLab_gnb = int(clf_gnb.predict([test_fea[j]]))
-        # predLab_nc = int(clf_nc.predict([test_fea[j]]))
-        h = predLab_svm  # + predLab_log + predLab_gnb + predLab_nc
-        if (h >= 3):
-            my_predLab = 1
-        elif (h <= 1):
-            my_predLab = 0
+    for j in range(0, len_test_features, 1):
+        svc_predicted_labels = int(svc.predict([test_features[j]]))
+
+        if (svc_predicted_labels >= 3):
+            final_predicted_labels = 1
+        elif (svc_predicted_labels <= 1):
+            final_predicted_labels = 0
         else:
-            my_predLab = predLab_svm
+            final_predicted_labels = svc_predicted_labels
 
-        # if (my_predLab == y_test[j]):
-        #     my_counter += 1
-        if (predLab_svm == y_test[j]):
+        if (svc_predicted_labels == y_test[j]):
             counter_svm += 1
-        # if (predLab_log == y_test[j]):
-        #     counter_log += 1
-        # if (predLab_gnb == y_test[j]):
-        #     counter_gnb += 1
-        # if (predLab_nc == y_test[j]):
-        #     counter_nc += 1
 
-    accuracy_svm += counter_svm / len_test_fea
-    # accuracy_log += counter_log / len_test_fea
+    accuracy_svm += counter_svm / len_test_features
 
-    # accuracy_gnb += counter_gnb / len_test_fea
-    # accuracy_nc += counter_nc / len_test_fea
-
-    my_accuracy += my_counter / len_test_fea
-    allAccuracies.append(my_counter / len_test_fea)
+    # my_accuracy += my_counter / len_test_features
+    accuracy_array.append(my_counter / len_test_features)
 
 
-bestAc = max(allAccuracies)
-bestInd = allAccuracies.index(bestAc)
-bestFeatures = allFeatures[bestInd]
+bestAc = max(accuracy_array)
+bestInd = accuracy_array.index(bestAc)
+bestFeatures = feature_array[bestInd]
 
-print("\nFeatures: ", feat)
+print("\nNumber of Features: ", feature_count)
 
-originalFea = array.array("i")
-for i in range(0, feat, 1):
-    realIndex = savedFea[bestFeatures[i]]
-    originalFea.append(realIndex)
+original_features = array.array("i")
+for i in range(0, feature_count, 1):
+    realIndex = saved_features[bestFeatures[i]]
+    original_features.append(realIndex)
 
-print("The features are: ", originalFea)
+print("\nThe features are: ", original_features)
 
 # Calculate Accuracy
-argument1 = copy.deepcopy(originalFea)
-AccData = data_set(argument1, data)
+feature_copies = copy.deepcopy(original_features)
+accuracies = data_set(feature_copies, data)
 
-clf_svm.fit(AccData, trainlabels)
-# clf_log.fit(AccData, trainlabels)
-# clf_gnb.fit(AccData, trainlabels)
-# clf_nc.fit(AccData, trainlabels)
+svc.fit(accuracies, trainlabels)
 
 svm_counter = 0
-# LeCounter = 0
-k = len(AccData)
+
+k = len(accuracies)
 for i in range(0, k, 1):
-    predLab_svm = int(clf_svm.predict([AccData[i]]))
-    # predLab_log = int(clf_log.predict([AccData[i]]))
-    # predLab_gnb = int(clf_gnb.predict([AccData[i]]))
-    # predLab_nc = int(clf_nc.predict([AccData[i]]))
-    h = predLab_svm  # + predLab_log + predLab_gnb + predLab_nc
-    if (h >= 3):
-        my_predLab = 1
-    elif (h <= 1):
-        my_predLab = 0
+    svc_predicted_labels = int(svc.predict([accuracies[i]]))
+
+    if (svc_predicted_labels >= 3):
+        final_predicted_labels = 1
+    elif (svc_predicted_labels <= 1):
+        final_predicted_labels = 0
     else:
-        my_predLab = predLab_svm
-    # if (my_predLab == trainlabels[i]):
-    #     LeCounter += 1
-    if (predLab_svm == trainlabels[i]):
+        final_predicted_labels = svc_predicted_labels
+    if (svc_predicted_labels == trainlabels[i]):
         svm_counter += 1
 
-# FinalAcc = LeCounter / k
-SVMAc = svm_counter / k
-print("Accuracy: ", SVMAc * 100)
+accuracy = svm_counter / k
+print("\nAccuracy: ", accuracy * 100)
 
 # Read Test data
 testfile = sys.argv[3]
 testdata = []
-with open(testfile, "r") as infile:
-    for line in infile:
-        temp = line.split()
+with open(testfile, "r") as file:
+    for line in file:
+        s = line.split()
         l = array.array("i")
-        for i in temp:
+        for i in s:
             l.append(int(i))
         testdata.append(l)
 
-argument2 = copy.deepcopy(originalFea)
-testdata1 = data_set(argument2, testdata)
+deep_copy = copy.deepcopy(original_features)
+updated_test_data = data_set(deep_copy, testdata)
 
 # create a file
-f1 = open("testLabels", "w+")
+testlabels = open("testLabels", "w+")
 
-for i in range(0, len(testdata1), 1):
-    lab1 = int(clf_svm.predict([testdata1[i]]))
-    # lab2 = int(clf_log.predict([testdata1[i]]))
-    # lab3 = int(clf_gnb.predict([testdata1[i]]))
-    # lab4 = int(clf_nc.predict([testdata1[i]]))
-    h = lab1  # + lab2 + lab3 + lab4
-    if (h >= 3):
-        f1.write(str(1) + " " + str(i) + "\n")
-    elif (h <= 1):
-        f1.write(str(0) + " " + str(i) + "\n")
-    else:
-        f1.write(str(lab1) + " " + str(i) + "\n")
+for i in range(0, len(updated_test_data), 1):
+    lab1 = int(svc.predict([updated_test_data[i]]))
+    testlabels.write(str(lab1) + " " + str(i) + "\n")
 
-print("\nPredicted labels of the test data are saved in testLabels file")
-print("Done everything")
+print("\nPredicted labels data created.")
+print("\nProcess Completed.")
