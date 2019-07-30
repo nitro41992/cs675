@@ -117,20 +117,11 @@ feature_array = []
 accuracy_svm = 0
 accuracy_score = 0
 
-# my_accuracy = 0
-
-
 for i in range(iterations):
 
     print("\nIteration # ", i + 1)
     x_train, x_test, y_train, y_test = split(
         updated_data, trainlabels, test_size=0.3)
-
-    # new_train_rows = len(x_train)
-    # new_train_cols = len(x_train[0])
-    # new_test_rows = len(x_test)
-    # new_test_cols = len(x_test[0])
-    # new_label_rows = len(y_train)
 
     corr_features = pearson_correlation(x_train, y_train, feature_count)
 
@@ -163,8 +154,6 @@ for i in range(iterations):
             counter_svm += 1
 
     accuracy_svm += counter_svm / len_test_features
-
-    # my_accuracy += my_counter / len_test_features
     accuracy_array.append(my_counter / len_test_features)
 
 
