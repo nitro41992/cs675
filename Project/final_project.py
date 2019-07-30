@@ -10,18 +10,6 @@ gamma = 0.001
 iterations = 5
 
 
-def data_set(feature, data):
-    newData = [[row[feature[0]]] for row in data]
-
-    feature.remove(feature[0])
-    length = len(feature)
-    for _ in range(0, length, 1):
-        data_set = [[row[feature[0]]] for row in data]
-        newData = [x + y for x, y in zip(newData, data_set)]
-        feature.remove(feature[0])
-    return newData
-
-
 def split(data, labels, test_size=size):
     random.seed(seed)
     num_of_test_data = len(data) * test_size
@@ -38,6 +26,18 @@ def split(data, labels, test_size=size):
             x_test.append(data[feat_i])
             y_test.append(labels[feat_i])
     return x_train, x_test, y_train, y_test
+
+
+def data_set(feature, data):
+    newData = [[row[feature[0]]] for row in data]
+
+    feature.remove(feature[0])
+    length = len(feature)
+    for _ in range(0, length, 1):
+        data_set = [[row[feature[0]]] for row in data]
+        newData = [x + y for x, y in zip(newData, data_set)]
+        feature.remove(feature[0])
+    return newData
 
 
 def pearson_correlation(x, y, fi):
@@ -182,12 +182,11 @@ k = len(accuracies)
 for i in range(0, k, 1):
     svc_predicted_labels = int(svc.predict([accuracies[i]]))
 
-    if (svc_predicted_labels >= 3):
-        final_predicted_labels = 1
-    elif (svc_predicted_labels <= 1):
+    if (svc_predicted_labels <= 1):
         final_predicted_labels = 0
     else:
         final_predicted_labels = svc_predicted_labels
+
     if (svc_predicted_labels == trainlabels[i]):
         svm_counter += 1
 
