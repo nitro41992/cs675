@@ -170,6 +170,9 @@ for i in range(0, feature_count, 1):
 
 print("\nThe features are: ", original_features)
 
+feature_output = open("FeatureLabels", "w+")
+feature_output.write(str(original_features))
+
 # Calculate Accuracy
 feature_copies = copy.deepcopy(original_features)
 accuracies = data_set(feature_copies, data)
@@ -208,7 +211,7 @@ deep_copy = copy.deepcopy(original_features)
 updated_test_data = data_set(deep_copy, testdata)
 
 # create a file
-testlabels = open("testLabels", "w+")
+testlabels = open("PredictedLabels", "w+")
 
 for i in range(0, len(updated_test_data), 1):
     lab1 = int(svc.predict([updated_test_data[i]]))
