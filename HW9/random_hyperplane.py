@@ -50,13 +50,6 @@ for label in train_labels:
     label_list.append(train_labels.get(label))
 
 
-def dot_product(w, data):
-    sum_dp = 0
-    for j in range(0, cols, 1):
-        sum_dp = sum_dp + w[j]*float(data[j])
-    return sum_dp
-
-
 def fixdata(data):
     new_data = []
     n = 0
@@ -67,12 +60,18 @@ def fixdata(data):
     return new_data
 
 
+def dot_product(w, data):
+    sum_dp = 0
+    for j in range(0, cols, 1):
+        sum_dp = sum_dp + w[j]*float(data[j])
+    return sum_dp
+
+
 newdata_train = []
-filename = sys.argv[3]
-f = open(filename, 'w')
+output = open('errors', 'w+')
 
 
-planes = [10, 100, 1000]  # , 10000]
+planes = [10, 100, 1000, 10000]
 
 for k in planes:
     print("For ", k, " random planes")
@@ -105,23 +104,23 @@ for k in planes:
     clf = svm.SVC(kernel='linear', C=.01, max_iter=10000)
     scores = cross_val_score(clf, fixdata(traindata), label_list, cv=5)
     scores[:] = [1-x for x in scores]
-    scores_o = cross_val_score(clf, fixdata(data), label_list, cv=5)
-    scores_o[:] = [1-x for x in scores_o]
+    scores = cross_val_score(clf, fixdata(data), label_list, cv=5)
+    scores[:] = [1-x for x in scores]
 
     print("error for the new features: ", scores)
     print("mean error for the new features: ", scores.mean())
-    print("error for eht orginal: ", scores_o)
-    print("mean error for the orginal: ", scores_o.mean())
+    print("error for the orginal: ", scores)
+    print("mean error for the orginal: ", scores.mean())
 
-    f.write("error for the new features: " + "\n")
-    f.write(str(scores)+"\n")
-    f.write("mean error for the new features: " + "\n")
-    f.write(str(scores.mean()) + "\n")
+    output.write("error for the new features: " + "\n")
+    output.write(str(scores)+"\n")
+    output.write("mean error for the new features: " + "\n")
+    output.write(str(scores.mean()) + "\n")
 
-    f.write(" error for the original: " + "\n")
-    f.write(str(scores_o) + "\n")
-    f.write("mean error for the orginal: " + "\n")
-    f.write(str(scores_o.mean()) + "\n")
+    output.write(" error for the original: " + "\n")
+    output.write(str(scores) + "\n")
+    output.write("mean error for the orginal: " + "\n")
+    output.write(str(scores.mean()) + "\n")
 
 
-f.close()
+output.close()
